@@ -3,6 +3,7 @@ import { getRandomItem } from 'src/app/helpers/random.helper';
 import { Pokemon } from '../../interfaces/pokemon.interface';
 import { PlayerService } from '../../services/player.service';
 import { PokemonService } from '../../services/pokemon.service';
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-game',
@@ -20,7 +21,7 @@ export class GameComponent implements OnInit {
   get score(): number {
     return this.playerService.score;
   }
-  
+
   get hearts(): Array<any> {
     return Array(this.playerService.lifes);
   }
@@ -43,32 +44,89 @@ export class GameComponent implements OnInit {
   }
 
   get pokemonName(): string {
-    return this._selected? this._pokemon.name : 'undefined';
+    return this._selected ? this._pokemon.name : 'undefined';
   }
 
   constructor(
     private playerService: PlayerService,
-    private pokemonService: PokemonService
-  ) { }
+    private pokemonService: PokemonService,
+    private http: HttpClient
+  ) {
+  }
 
   ngOnInit(): void {
     this.playerService.resetGame();
     this.newGame();
   }
 
-  onSelect(pokemonName: string) {
+  async promiseprova(seleccio: string): Promise<any> {
+    const pokemon = seleccio;
+    const promise = new Promise<any>((resolve, reject) => {
+
+      let Observable$ = this.http.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}/encounters`).subscribe({
+        // @ts-ignore
+        next: (data) => {
+          resolve(data)
+        },
+        // @ts-ignore
+        error: (err) => {
+          reject(err)
+        }
+      })
+    });
+    return promise;
+  }
+
+  ubicacio: []=[];
+  async onSelect(pokemonName: string) {
     this._pokemonSelected = pokemonName;
     this._selected = true;
 
+    const seleccio = pokemonName;
+
     if (pokemonName === this._pokemon.name) {
       this.playerService.increasePoints();
+
+      await this.promiseprova(seleccio)
+        .then((val) => {
+          for (var i = 0; i < val.length; i++) {
+            // @ts-ignore
+            this.ubicacio[i] = val[i].location_area.name;
+          }
+          for (var i = 0; i < val.length; i++) {
+            console.log(val[i].location_area.name);
+          }
+          var ubicacioContainer = document.getElementById("ubicacioContainer");
+          // @ts-ignore
+          ubicacioContainer.innerHTML = this.ubicacio.map((value) => "<p>" + value + "</p>").join("");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
+
 
     if (pokemonName !== this._pokemon.name) {
       this.playerService.decreaseLifes();
       console.log('incorrect');
+      await this.promiseprova(seleccio)
+        .then((val) => {
+          for (var i = 0; i < val.length; i++) {
+            // @ts-ignore
+            this.ubicacio[i] = val[i].location_area.name;
+          }
+          for (var i = 0; i < val.length; i++) {
+            console.log(val[i].location_area.name);
+          }
+          var ubicacioContainer = document.getElementById("ubicacioContainer");
+          // @ts-ignore
+          ubicacioContainer.innerHTML = this.ubicacio.map((value) => "<p>" + value + "</p>").join("");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-    
+
   }
 
   // this function es execute every time that user click in next game
@@ -88,5 +146,9 @@ export class GameComponent implements OnInit {
       this.loaded = true;
     }
   }
+
+
+
+
 
 }

@@ -27,4 +27,17 @@
             SCORES
         </button>
      </div>
+
+  <hr>
+
+  <form id="formulari">
+    pokemon: <input id="input" type="text" value="" [(ngModel)]="pokemon" name="pokemon"><button mat-stroked-button color="primary" (click)="clicar()">TROBAR</button>
+    <div id="resultContainer" style="display: none">
+      <p id="resultMessage"></p>
+    </div>
+  </form>
+
+
+
+
 </div>

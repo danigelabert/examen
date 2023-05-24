@@ -14,7 +14,7 @@
         <div>
             <h2>Who is that Pokemon?...</h2>
         </div>
-    
+
         <div>
             <app-pokemon-view [url]="urlImage"
                               [show]="selected"
@@ -38,23 +38,28 @@
                 </li>
             </ul>
         </div>
-    
+
         <!-- <div>
             <h3>Points: {{ points }}</h3>
         </div>
         <div>
             <img *ngFor="let heart of hearts" class="heart" src="assets/heart.png">
         </div> -->
-    
+
         <div *ngIf="selected">
             <button mat-raised-button
                     color="primary"
                     (click)="newGame()">
+
                     Next Pokemon
             </button>
         </div>
     </div>
-    
+
+  <h2>LOCALITZACIO:</h2>
+  <div id="ubicacioContainer"></div>
+
+
 </ng-container>
 
 <ng-template #Loading>
